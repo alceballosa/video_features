@@ -252,17 +252,21 @@ class I3D(torch.nn.Module):
         out = self.mixed_4e(out)
         out = self.mixed_4f(out)
         out = self.maxPool3d_5a_2x2(out)
-        out = self.mixed_5b(out)
-        out = self.mixed_5c(out)  # <- [1,  832, 8 (for T=64) or 3 (for T=24), 1, 1]
-        out = self.avg_pool(out)  # <- [1, 1024, 8 (for T=64) or 3 (for T=24), 1, 1]
-
         if features:
-            out = out.squeeze(3)  # <- (B, 1024, 8 (for T=64) or 3 (for T=24), 1)
-            out = out.squeeze(3)  # <- (B, 1024, 8 (for T=64) or 3 (for T=24))
-            out = out.mean(2)     # <- (B, 1024)
+            print(out.shape)
+            return out
 
-            return out  # (B, 1024)
         else:
+            out = self.mixed_5b(out)
+            out = self.mixed_5c(out)  # <- [1,  832, 8 (for T=64) or 3 (for T=24), 1, 1]
+            out = self.avg_pool(out)  # <- [1, 1024, 8 (for T=64) or 3 (for T=24), 1, 1]
+            #if features:
+            #    out = out.squeeze(3)  # <- (B, 1024, 8 (for T=64) or 3 (for T=24), 1)
+            #    out = out.squeeze(3)  # <- (B, 1024, 8 (for T=64) or 3 (for T=24))
+            #    out = out.mean(2)     # <- (B, 1024)
+
+            #    return out  # (B, 1024)
+            # else:
             out = self.dropout(out)
             out = self.conv3d_0c_1x1(out)
             out = out.squeeze(3)
