@@ -160,6 +160,7 @@ class ExtractI3D(torch.nn.Module):
         fps = cap.get(cv2.CAP_PROP_FPS)
         # timestamp when the last frame in the stack begins (when the old frame of the last pair ends)
         timestamps_ms = []
+        # TODO: verify this implementation for step sizes other than 1
         stack = []
         feats_dict = {stream: [] for stream in self.streams}
 
@@ -179,7 +180,12 @@ class ExtractI3D(torch.nn.Module):
 
             if frame_exists:
                 # preprocess the image
+
                 rgb = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGB)
+                # ! added by me
+                # if len(stack) == 0:
+                #    stack = [np.zeros_like(rgb) for i in range(self.stack_size)]
+                #    stack = [self.resize_transforms(img).unsqueeze(0) for img in stack]
                 rgb = self.resize_transforms(rgb)
                 rgb = rgb.unsqueeze(0)
 
@@ -187,7 +193,6 @@ class ExtractI3D(torch.nn.Module):
                     padder = InputPadder(rgb.shape)
 
                 stack.append(rgb)
-
                 # - 1 is used because we need B+1 frames to calculate B frames
                 if len(stack) - 1 == self.stack_size:
                     _run_on_a_stack(feats_dict, stack, models, device, stack_counter, padder)
