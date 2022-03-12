@@ -1,6 +1,8 @@
 # Output files
 
+.out
 output/
+
 
 # Byte-compiled / optimized / DLL files
 
