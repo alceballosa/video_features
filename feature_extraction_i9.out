@@ -1,0 +1,21 @@
+nohup: ignoring input
+{'feature_type': 'i3d', 'flow_type': 'raft', 'streams': 'flow', 'device_ids': [0, 1], 'file_with_video_paths': '/home/alberto/workspace/domain-adaptation-general/homage-zsl/data/local/videos_list_1st.txt', 'output_path': '/home/alberto/workspace/domain-adaptation-general/datasets/home-action-genome/local-dataset/extracted_features', 'on_extraction': 'save_numpy', 'stack_size': 60, 'step_size': 30}
+feature_type: i3d
+stack_size: 60
+step_size: 30
+streams: flow
+flow_type: raft
+extraction_fps: null
+device_ids:
+- 0
+- 1
+on_extraction: save_numpy
+output_path: /home/alberto/workspace/domain-adaptation-general/datasets/home-action-genome/local-dataset/extracted_features
+tmp_path: ./tmp
+keep_tmp_files: false
+show_pred: false
+config: null
+file_with_video_paths: /home/alberto/workspace/domain-adaptation-general/homage-zsl/data/local/videos_list_1st.txt
+
+Saving features to /home/alberto/workspace/domain-adaptation-general/datasets/home-action-genome/local-dataset/extracted_features
+  0%|          | 0/1359 [00:00<?, ?it/s]  0%|          | 1/1359 [02:00<45:20:16, 120.19s/it]  0%|          | 2/1359 [02:14<33:21:11, 88.48s/it]   0%|          | 3/1359 [02:50<27:21:46, 72.64s/it]
