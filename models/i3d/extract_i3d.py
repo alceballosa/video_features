@@ -1,21 +1,29 @@
 import os
 # import traceback
-from typing import Dict, Tuple, Union
+from typing import Dict
+from typing import Tuple
+from typing import Union
 
 import cv2
 import numpy as np
 import torch
 from models.i3d.i3d_src.i3d_net import I3D
-from models.i3d.transforms.transforms import (Clamp, PermuteAndUnsqueeze,
-                                              PILToTensor, ResizeImproved,
-                                              ScaleTo1_1, TensorCenterCrop,
-                                              ToFloat, ToUInt8)
-from models.raft.raft_src.raft import RAFT, InputPadder
+from models.i3d.transforms.transforms import Clamp
+from models.i3d.transforms.transforms import PermuteAndUnsqueeze
+from models.i3d.transforms.transforms import PILToTensor
+from models.i3d.transforms.transforms import ResizeImproved
+from models.i3d.transforms.transforms import ScaleTo1_1
+from models.i3d.transforms.transforms import TensorCenterCrop
+from models.i3d.transforms.transforms import ToFloat
+from models.i3d.transforms.transforms import ToUInt8
+from models.raft.raft_src.raft import RAFT
+from models.raft.raft_src.raft import InputPadder
 from torchvision import transforms
 from tqdm import tqdm
-from utils.utils import (action_on_extraction, form_list_from_user_input,
-                         reencode_video_with_diff_fps,
-                         show_predictions_on_dataset)
+from utils.utils import action_on_extraction
+from utils.utils import form_list_from_user_input
+from utils.utils import reencode_video_with_diff_fps
+from utils.utils import show_predictions_on_dataset
 
 PWC_MODEL_PATH = './models/pwc/checkpoints/pwc_net_sintel.pt'
 RAFT_MODEL_PATH = './models/raft/checkpoints/raft-sintel.pth'
@@ -160,6 +168,7 @@ class ExtractI3D(torch.nn.Module):
         fps = cap.get(cv2.CAP_PROP_FPS)
         # timestamp when the last frame in the stack begins (when the old frame of the last pair ends)
         timestamps_ms = []
+        # TODO: verify this implementation for step sizes other than 1
         stack = []
         feats_dict = {stream: [] for stream in self.streams}
 
@@ -179,7 +188,12 @@ class ExtractI3D(torch.nn.Module):
 
             if frame_exists:
                 # preprocess the image
+
                 rgb = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGB)
+                # ! added by me
+                # if len(stack) == 0:
+                #    stack = [np.zeros_like(rgb) for i in range(self.stack_size)]
+                #    stack = [self.resize_transforms(img).unsqueeze(0) for img in stack]
                 rgb = self.resize_transforms(rgb)
                 rgb = rgb.unsqueeze(0)
 
@@ -187,7 +201,6 @@ class ExtractI3D(torch.nn.Module):
                     padder = InputPadder(rgb.shape)
 
                 stack.append(rgb)
-
                 # - 1 is used because we need B+1 frames to calculate B frames
                 if len(stack) - 1 == self.stack_size:
                     _run_on_a_stack(feats_dict, stack, models, device, stack_counter, padder)
@@ -206,11 +219,12 @@ class ExtractI3D(torch.nn.Module):
         if (self.extraction_fps is not None) and (not self.keep_tmp_files):
             os.remove(video_path)
 
+        # ! added by me: use np float32 to save space
         # transforms list of features into a np array
-        feats_dict = {stream: np.array(feats) for stream, feats in feats_dict.items()}
+        feats_dict = {stream: np.array(feats, dtype=np.float32) for stream, feats in feats_dict.items()}
         # also include the timestamps and fps
-        feats_dict['fps'] = np.array(fps)
-        feats_dict['timestamps_ms'] = np.array(timestamps_ms)
+        feats_dict['fps'] = np.array(fps, dtype=np.float32)
+        feats_dict['timestamps_ms'] = np.array(timestamps_ms, dtype=np.float32)
 
         return feats_dict
 

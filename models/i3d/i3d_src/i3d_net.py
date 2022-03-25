@@ -252,7 +252,7 @@ class I3D(torch.nn.Module):
         out = self.mixed_4d(out)
         out = self.mixed_4e(out)
         out = self.mixed_4f(out)
-        out = self.maxPool3d_5a_2x2(out)
+        out = self.maxPool3d_5a_2x2(out) #1, 832, 8, (for T=64), 1, 1
         if features:
             return out
 
