@@ -248,11 +248,16 @@ class I3D(torch.nn.Module):
         out = self.mixed_3c(out)
         out = self.maxPool3d_4a_3x3(out)
         out = self.mixed_4b(out)
+        print("-----------")
         out = self.mixed_4c(out)
-        out = self.mixed_4d(out)
-        out = self.mixed_4e(out)
-        out = self.mixed_4f(out)
-        out = self.maxPool3d_5a_2x2(out) #1, 832, 8, (for T=64), 1, 1
+        out = self.mixed_4d(out) # 1, 512, 15 (for T=60), 14, 14
+        print(out.shape)
+        out = self.mixed_4e(out) # 1, 528, 15 (for T=60), 14, 14
+        print(out.shape)
+        out = self.mixed_4f(out) # 1, 832, 15 (for T=60), 14, 14
+        print(out.shape)
+        out = self.maxPool3d_5a_2x2(out) # 1, 832, 8 (for T=60), 7, 7
+        print(out.shape)
         if features:
             return out
 
