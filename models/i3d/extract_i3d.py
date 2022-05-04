@@ -221,10 +221,10 @@ class ExtractI3D(torch.nn.Module):
 
         # ! added by me: use np float32 to save space
         # transforms list of features into a np array
-        feats_dict = {stream: np.array(feats, dtype=np.float32) for stream, feats in feats_dict.items()}
+        feats_dict = {stream: np.array(feats[:,:,-1:,:,:], dtype=np.float16) for stream, feats in feats_dict.items()}
         # also include the timestamps and fps
-        feats_dict['fps'] = np.array(fps, dtype=np.float32)
-        feats_dict['timestamps_ms'] = np.array(timestamps_ms, dtype=np.float32)
+        feats_dict['fps'] = np.array(fps, dtype=np.float16)
+        feats_dict['timestamps_ms'] = np.array(timestamps_ms, dtype=np.float16)
 
         return feats_dict
 
