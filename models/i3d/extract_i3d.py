@@ -191,9 +191,9 @@ class ExtractI3D(torch.nn.Module):
 
                 rgb = cv2.cvtColor(rgb, cv2.COLOR_BGR2RGB)
                 # ! added by me
-                #if len(stack) == 0:
-                #    stack = [np.zeros_like(rgb) for i in range(self.stack_size)]
-                #    stack = [self.resize_transforms(img).unsqueeze(0) for img in stack]
+                if len(stack) == 0:
+                    stack = [np.zeros_like(rgb) for i in range(self.stack_size)]
+                    stack = [self.resize_transforms(img).unsqueeze(0) for img in stack]
                 rgb = self.resize_transforms(rgb)
                 rgb = rgb.unsqueeze(0)
 
